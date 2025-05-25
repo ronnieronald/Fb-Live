@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ver Facebook Live</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .form-container {
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    input[type="text"] {
+      flex: 1 1 60%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    button:hover {
+      background-color: #005fa3;
+    }
+
+    .video-container {
+      width: 90%;
+      max-width: 720px;
+      aspect-ratio: 16 / 9;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      background: #000;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <input type="text" id="urlInput" placeholder="Pega aquí la URL del Facebook Live">
+    <button onclick="pegarDesdePortapapeles()">Pegar</button>
+    <button onclick="cargarVideo()">Cargar</button>
+  </div>
+
+  <div class="video-container" id="videoContainer" style="display:none;">
+    <iframe id="fbIframe" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+
+  <script>
+    function pegarDesdePortapapeles() {
+      navigator.clipboard.readText()
+        .then(texto => {
+          document.getElementById('urlInput').value = texto;
+        })
+        .catch(() => {
+          alert('No se pudo acceder al portapapeles. Asegúrate de haber dado permisos o usar HTTPS.');
+        });
+    }
+
+    function cargarVideo() {
+      const url = document.getElementById('urlInput').value.trim();
+
+      if (!url.includes("facebook.com")) {
+        alert("Por favor, ingresa un enlace válido de Facebook Live.");
+        return;
+      }
+
+      const encodedURL = encodeURIComponent(url);
+      const embedURL = `https://www.facebook.com/plugins/video.php?href=${encodedURL}&show_text=false&autoplay=true`;
+
+      const iframe = document.getElementById('fbIframe');
+      iframe.src = embedURL;
+
+      document.getElementById('videoContainer').style.display = 'block';
+    }
+  </script>
+
+</body>
+</html>
