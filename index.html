@@ -1,32 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Publicaciones de la Página</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transmisión en Vivo</title>
   <style>
+    * { box-sizing: border-box; }
+
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
+      background-color: #111;
+      color: #fff;
+      margin: 0;
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      text-align: center;
+    }
+
+    .formulario {
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .button-group {
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
+      margin: 5px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .video-container {
+      display: none;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 30px;
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .fb-wrapper {
+      margin-top: 30px;
+      min-height: 600px;
+    }
+
+    .oculto {
+      display: none !important;
     }
   </style>
 </head>
 <body>
 
-  <h2>Últimas publicaciones de la página</h2>
-  <div class="fb-page"
-       data-href="https://web.facebook.com/iglesiamaranatacusco/"
-       data-tabs="timeline"
-       data-width="500"
-       data-height="600"
-       data-small-header="false"
-       data-adapt-container-width="true"
-       data-hide-cover="false"
-       data-show-facepile="false">
+  <div class="container" id="interfaz">
+    <div class="formulario">
+      <h2>Ver transmisión en vivo</h2>
+      <input type="text" id="urlInput" placeholder="Pega el enlace del Live de Facebook">
+      <div class="button-group">
+        <button onclick="pegarDesdePortapapeles()">Pegar</button>
+        <button onclick="cargarVideo()">Cargar</button>
+      </div>
+    </div>
+
+    <div class="fb-wrapper">
+      <h2>Últimas publicaciones de la página</h2>
+      <div class="fb-page"
+           data-href="https://web.facebook.com/iglesiamaranatacusco/"
+           data-tabs="timeline"
+           data-width="500"
+           data-height="600"
+           data-small-header="false"
+           data-adapt-container-width="true"
+           data-hide-cover="false"
+           data-show-facepile="false">
+      </div>
+    </div>
   </div>
 
-  <script async defer crossorigin="anonymous"
-    src="https://connect.facebook.net/es_ES/sdk.js#xfbml=1&version=v19.0" nonce="abc123"></script>
+  <div class="video-container" id="videoContainer">
+    <iframe id="fbIframe" allow="autoplay; encrypted-media;" allowfullscreen></iframe>
+  </div>
+
+  <!-- SDK de Facebook -->
+  <div id="fb-root"></div>
+  <script>
+    window.fbAsyncInit = function () {
+      FB.init({
+        xfbml: true,
+        version: 'v19.0'
+      });
+    };
+
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/es_ES/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
+
+  <script>
+    function cargarVideo() {
+      const url = document.getElementById('urlInput').value.trim();
+      if (!url.includes("facebook.com")) {
+        alert("Por favor, pega un enlace válido.");
+        return;
+      }
+
+      const embedURL = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&autoplay=true`;
+      document.getElementById('fbIframe').src = embedURL;
+
+      document.getElementById('interfaz').classList.add('oculto');
+      document.getElementById('videoContainer').style.display = 'block';
+    }
+
+    async function pegarDesdePortapapeles() {
+      try {
+        const texto = await navigator.clipboard.readText();
+        document.getElementById('urlInput').value = texto;
+      } catch (err) {
+        alert("No se pudo acceder al portapapeles. Asegúrate de permitir el acceso.");
+      }
+    }
+  </script>
 
 </body>
-</html>
+    </html>
